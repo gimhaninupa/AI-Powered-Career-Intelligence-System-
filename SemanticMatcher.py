@@ -10,6 +10,7 @@ torch.set_num_threads(1)
 
 from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
+from preprocessing import build_semantic_job_profile, clean_text
 
 
 class SemanticMatcher:
@@ -42,12 +43,11 @@ class SemanticMatcher:
         # 2. Handle missing values in text columns by filling NaN with empty string ''
         self.df = self.df.fillna('')
 
-        # 3. Create a combined text representation for each job to capture full context
-        print("[+] Combining job text fields (Title, Field, Description, Responsibilities, Skills)...")
-        combined_text_series = self.df.apply(self._build_combined_text, axis=1)
+        # 3. Create a preprocessed combined text representation for each job
+        print("[+] Preprocessing and combining job text fields (Title, Field, Description, Responsibilities, Skills)...")
+        combined_text_series = self.df.apply(build_semantic_job_profile, axis=1)
 
         # 4. Load the pre-trained SBERT model 'all-MiniLM-L6-v2'
-        # 'all-MiniLM-L6-v2' maps sentences/paragraphs to a 384 dimensional dense vector space
         print("[+] Loading pre-trained SBERT model ('all-MiniLM-L6-v2')...")
         self.model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
 
@@ -62,33 +62,19 @@ class SemanticMatcher:
         self.knn.fit(self.job_embeddings)
         print("[+] SemanticMatcher initialization complete!\n")
 
-    def _build_combined_text(self, row: pd.Series) -> str:
-        """
-        Helper method to aggregate relevant text columns into a single descriptive string.
-        """
-        title = row.get('Job Title', '')
-        field = row.get('Job Field', '')
-        desc = row.get('Job Description', '')
-        resp = row.get('Key Responsibilities', '')
-        skills = row.get('Required Skills & Qualifications', '')
-
-        # HTML linebreaks (<br>) cleanup if present in data
-        resp_clean = str(resp).replace('<br>', ' ')
-        skills_clean = str(skills).replace('<br>', ' ')
-
-        combined = f"Job Title: {title}. Field: {field}. Description: {desc}. Key Responsibilities: {resp_clean}. Skills & Qualifications: {skills_clean}."
-        return combined
-
     def match_candidate(self, candidate_text: str, top_k: int = 5) -> list:
         """
         Matches a candidate CV/profile string against all job descriptions in the dataset.
         
         :param candidate_text: Candidate CV summary, skills, or experience string
         :param top_k: Number of top job recommendations to return (default: 5)
-        :return: List of dictionaries containing job details and calculated match percentage scores
+        :return: List of dictionaries containing job details, match percentages, and category ratings
         """
+        # Clean candidate text before encoding
+        cleaned_candidate_text = clean_text(candidate_text)
+
         # 1. Encode candidate_text into a 384-dim dense vector using SBERT
-        candidate_embedding = self.model.encode([candidate_text])
+        candidate_embedding = self.model.encode([cleaned_candidate_text])
 
         # 2. Retrieve top_k closest job embeddings using KNN
         distances, indices = self.knn.kneighbors(candidate_embedding, n_neighbors=top_k)
@@ -99,10 +85,18 @@ class SemanticMatcher:
 
         results = []
         for dist, idx in zip(distances, indices):
-            # 3. Convert Cosine Distance to Similarity Percentage:
-            # Cosine Distance = 1 - Cosine Similarity
-            # Match Percentage = (1 - distance) * 100
+            # 3. Convert Cosine Distance to Similarity Percentage
             similarity_percentage = round(float((1 - dist) * 100), 2)
+
+            # Categorize match quality
+            if similarity_percentage >= 70.0:
+                match_category = "Strong Match"
+            elif similarity_percentage >= 60.0:
+                match_category = "Good Match"
+            elif similarity_percentage >= 50.0:
+                match_category = "Moderate Match"
+            else:
+                match_category = "Low Fit"
 
             job_row = self.df.iloc[idx]
 
@@ -112,10 +106,11 @@ class SemanticMatcher:
                 'job_title': job_row.get('Job Title', ''),
                 'job_field': job_row.get('Job Field', ''),
                 'match_percentage': similarity_percentage,
+                'match_category': match_category,
                 'cosine_distance': round(float(dist), 4),
-                'job_description': job_row.get('Job Description', ''),
-                'key_responsibilities': job_row.get('Key Responsibilities', ''),
-                'required_skills': job_row.get('Required Skills & Qualifications', '')
+                'job_description': clean_text(str(job_row.get('Job Description', ''))),
+                'key_responsibilities': clean_text(str(job_row.get('Key Responsibilities', ''))),
+                'required_skills': clean_text(str(job_row.get('Required Skills & Qualifications', '')))
             }
             results.append(job_match_info)
 
