@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Binary cache arrays
+*.npy
+
 # Virtual Environment
 venv/
 venv_py39/

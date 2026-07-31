@@ -54,12 +54,14 @@ def main():
         print(f"{rank_str:<6}{match_str:<12}{rating:<18}{title:<32}{field:<20}")
 
     print("=" * 90)
-    print("\nDETAILED BREAKDOWN OF TOP MATCH:")
+    print("\nDETAILED BREAKDOWN & SKILL GAP ANALYSIS OF TOP MATCH:")
     top_match = recommendations[0]
     print(f"Title:                {top_match['job_title']}")
     print(f"Field:                {top_match['job_field']}")
     print(f"Match Rating:         {top_match['match_category']} ({top_match['match_percentage']}%)")
     print(f"Cosine Distance:      {top_match['cosine_distance']}")
+    print(f"Matched Skills (✅):   {', '.join(top_match['matched_skills']) if top_match['matched_skills'] else 'None detected'}")
+    print(f"Missing Skills (⚠️):   {', '.join(top_match['missing_skills']) if top_match['missing_skills'] else 'None (Complete skill overlap)'}")
     print(f"Description:          {top_match['job_description'][:150]}...")
     print(f"Required Skills:      {top_match['required_skills']}")
     print("=" * 90)
