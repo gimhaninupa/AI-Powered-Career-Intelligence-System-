@@ -42,9 +42,12 @@ class SemanticMatcher:
         # 1. Load CSV using pandas
         self.df = pd.read_csv(job_csv_path).fillna('')
 
-        # 2. Load the pre-trained SBERT model 'all-MiniLM-L6-v2'
+        # 2. Load the pre-trained SBERT model 'all-MiniLM-L6-v2' (Fast local load)
         print("[+] Loading pre-trained SBERT model ('all-MiniLM-L6-v2')...")
-        self.model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
+        try:
+            self.model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu', local_files_only=True)
+        except Exception:
+            self.model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
 
         # 3. Check for cached embeddings on disk
         if os.path.exists(self.cache_file):
