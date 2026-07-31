@@ -40,27 +40,31 @@ def main():
 
     # 4. Cleanly print top recommendations and percentage match scores
     print(f"TOP {top_k} RECOMMENDED JOBS FOR CANDIDATE:")
-    print("=" * 75)
-    print(f"{'Rank':<6}{'Match %':<12}{'Job Title':<35}{'Job Field':<22}")
-    print("-" * 75)
+    print("=" * 90)
+    print(f"{'Rank':<6}{'Match %':<12}{'Match Rating':<18}{'Job Title':<32}{'Job Field':<20}")
+    print("-" * 90)
 
     for rank, rec in enumerate(recommendations, 1):
         rank_str = f"#{rank}"
         match_str = f"{rec['match_percentage']}%"
+        rating = rec['match_category']
         title = rec['job_title']
         field = rec['job_field']
         
-        print(f"{rank_str:<6}{match_str:<12}{title:<35}{field:<22}")
+        print(f"{rank_str:<6}{match_str:<12}{rating:<18}{title:<32}{field:<20}")
 
-    print("=" * 75)
-    print("\nDETAILED BREAKDOWN OF TOP MATCH:")
+    print("=" * 90)
+    print("\nDETAILED BREAKDOWN & SKILL GAP ANALYSIS OF TOP MATCH:")
     top_match = recommendations[0]
     print(f"Title:                {top_match['job_title']}")
     print(f"Field:                {top_match['job_field']}")
-    print(f"Match Score:          {top_match['match_percentage']}% (Cosine Distance: {top_match['cosine_distance']})")
+    print(f"Match Rating:         {top_match['match_category']} ({top_match['match_percentage']}%)")
+    print(f"Cosine Distance:      {top_match['cosine_distance']}")
+    print(f"Matched Skills (✅):   {', '.join(top_match['matched_skills']) if top_match['matched_skills'] else 'None detected'}")
+    print(f"Missing Skills (⚠️):   {', '.join(top_match['missing_skills']) if top_match['missing_skills'] else 'None (Complete skill overlap)'}")
     print(f"Description:          {top_match['job_description'][:150]}...")
-    print(f"Required Skills:      {top_match['required_skills'].replace('<br>', ' ')}")
-    print("=" * 75)
+    print(f"Required Skills:      {top_match['required_skills']}")
+    print("=" * 90)
 
 
 if __name__ == "__main__":
