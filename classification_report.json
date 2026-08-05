@@ -1,0 +1,45 @@
+{
+  "Arts, Media, Education & Public Service": {
+    "precision": 1.0,
+    "recall": 0.8620689655172413,
+    "f1-score": 0.9259259259259259,
+    "support": 29.0
+  },
+  "Banking, Finance & Audit": {
+    "precision": 0.8,
+    "recall": 0.9523809523809523,
+    "f1-score": 0.8695652173913043,
+    "support": 21.0
+  },
+  "Consulting, Business & Operations": {
+    "precision": 0.782608695652174,
+    "recall": 0.8571428571428571,
+    "f1-score": 0.8181818181818182,
+    "support": 21.0
+  },
+  "Engineering, Manufacturing & Technology": {
+    "precision": 1.0,
+    "recall": 0.9090909090909091,
+    "f1-score": 0.9523809523809523,
+    "support": 22.0
+  },
+  "Healthcare & Life Sciences": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 23.0
+  },
+  "accuracy": 0.9137931034482759,
+  "macro avg": {
+    "precision": 0.9165217391304349,
+    "recall": 0.9161367368263921,
+    "f1-score": 0.9132107827760002,
+    "support": 116.0
+  },
+  "weighted avg": {
+    "precision": 0.9244377811094453,
+    "recall": 0.9137931034482759,
+    "f1-score": 0.9159217288902446,
+    "support": 116.0
+  }
+}

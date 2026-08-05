@@ -1,0 +1,37 @@
+{
+  "unique_records": 579,
+  "removed_exact_duplicates": 28,
+  "number_of_classes": 5,
+  "class_distribution": {
+    "Arts, Media, Education & Public Service": 143,
+    "Banking, Finance & Audit": 105,
+    "Consulting, Business & Operations": 106,
+    "Engineering, Manufacturing & Technology": 108,
+    "Healthcare & Life Sciences": 117
+  },
+  "fixed_split": {
+    "random_state": 42,
+    "train_records": 463,
+    "test_records": 116,
+    "accuracy": 0.913793,
+    "macro_f1": 0.913211
+  },
+  "five_fold_cross_validation": {
+    "accuracy_folds": [
+      0.905172,
+      0.905172,
+      0.948276,
+      0.948276,
+      0.878261
+    ],
+    "mean_accuracy": 0.917031,
+    "macro_f1_folds": [
+      0.904198,
+      0.901851,
+      0.946109,
+      0.945885,
+      0.881798
+    ],
+    "mean_macro_f1": 0.915968
+  }
+}

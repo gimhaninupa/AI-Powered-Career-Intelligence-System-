@@ -1,6 +1,14 @@
 from pathlib import Path
 
+<<<<<<< HEAD
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+=======
+candidate_root = Path(__file__).resolve().parents[1]
+if (candidate_root / "README.md").exists() or (candidate_root / "requirements_baseline.txt").exists():
+    PROJECT_ROOT = candidate_root
+else:
+    PROJECT_ROOT = Path(__file__).resolve().parents[2]
+>>>>>>> 8dad167 (feature(data): add cleaning, mapping, and evaluation scripts; add training report)
 DATA_DIR = PROJECT_ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"

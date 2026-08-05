@@ -1,0 +1,84 @@
+{
+  "model_name": "google-bert/bert-base-uncased",
+  "target_column": "Broad Category",
+  "device": "cpu",
+  "records_used": 445,
+  "number_of_classes": 5,
+  "hyperparameters": {
+    "epochs": 4,
+    "batch_size": 16,
+    "max_length": 256,
+    "learning_rate": 2e-05,
+    "min_class_count": 5
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train": {
+        "loss": 1.6097319437109905,
+        "accuracy": 0.24157303370786518,
+        "macro_precision": 0.23811522055865045,
+        "macro_recall": 0.23527023674677872,
+        "macro_f1": 0.20992294422896407
+      },
+      "validation": {
+        "loss": 1.4669741590817769,
+        "accuracy": 0.39325842696629215,
+        "macro_precision": 0.15871657754010696,
+        "macro_recall": 0.33999999999999997,
+        "macro_f1": 0.21423001949317738
+      }
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "loss": 1.4014664162760195,
+        "accuracy": 0.4943820224719101,
+        "macro_precision": 0.6125149852659348,
+        "macro_recall": 0.4463439435329725,
+        "macro_f1": 0.4125063912465487
+      },
+      "validation": {
+        "loss": 1.194166898727417,
+        "accuracy": 0.651685393258427,
+        "macro_precision": 0.576159420289855,
+        "macro_recall": 0.5867251461988304,
+        "macro_f1": 0.5420865800865802
+      }
+    },
+    {
+      "epoch": 3,
+      "train": {
+        "loss": 1.086499932019607,
+        "accuracy": 0.7865168539325843,
+        "macro_precision": 0.8012125425790264,
+        "macro_recall": 0.7535208039754145,
+        "macro_f1": 0.7568849337022769
+      },
+      "validation": {
+        "loss": 0.8983370959758759,
+        "accuracy": 0.8876404494382022,
+        "macro_precision": 0.8810297482837528,
+        "macro_recall": 0.8732908027644871,
+        "macro_f1": 0.876037296037296
+      }
+    },
+    {
+      "epoch": 4,
+      "train": {
+        "loss": 0.8945070479227148,
+        "accuracy": 0.8792134831460674,
+        "macro_precision": 0.8858088786076228,
+        "macro_recall": 0.8606571077850698,
+        "macro_f1": 0.8669623059196623
+      },
+      "validation": {
+        "loss": 0.7856544554233551,
+        "accuracy": 0.8876404494382022,
+        "macro_precision": 0.8810297482837528,
+        "macro_recall": 0.8732908027644871,
+        "macro_f1": 0.876037296037296
+      }
+    }
+  ]
+}

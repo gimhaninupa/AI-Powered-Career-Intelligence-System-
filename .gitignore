@@ -1,4 +1,16 @@
-# Logs
+venv/
+.venv/
+venv_py39/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/processed/*.csv
+models/
+reports/*.json
+*.joblib
+/.vscode/
+/*.pyc
+.DS_Store# Logs
 logs
 *.log
 npm-debug.log*

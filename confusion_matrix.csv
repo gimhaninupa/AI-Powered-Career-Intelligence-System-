@@ -1,0 +1,6 @@
+﻿actual/predicted,"Arts, Media, Education & Public Service","Banking, Finance & Audit","Consulting, Business & Operations","Engineering, Manufacturing & Technology",Healthcare & Life Sciences
+"Arts, Media, Education & Public Service",25,1,3,0,0
+"Banking, Finance & Audit",0,20,1,0,0
+"Consulting, Business & Operations",0,3,18,0,0
+"Engineering, Manufacturing & Technology",0,1,1,20,0
+Healthcare & Life Sciences,0,0,0,0,23
