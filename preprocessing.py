@@ -100,9 +100,31 @@ def analyze_skill_gap(candidate_text: str, job_skills_text: str) -> dict:
             else:
                 missing_skills.append(item)
 
+    matched_list = sorted(list(set(matched_skills)))
+    missing_list = sorted(list(set(missing_skills)))
+
     return {
-        'matched_skills': sorted(list(set(matched_skills))),
-        'missing_skills': sorted(list(set(missing_skills))),
-        'matched_count': len(set(matched_skills)),
-        'missing_count': len(set(missing_skills))
+        'matched_skills': matched_list,
+        'missing_skills': missing_list,
+        'matched_count': len(matched_list),
+        'missing_count': len(missing_list),
+        'learning_roadmap': generate_career_roadmap(missing_list, "")
     }
+
+
+def generate_career_roadmap(missing_skills: list, job_title: str = "") -> str:
+    """
+    Generates actionable learning recommendations based on top missing skill gaps.
+    
+    :param missing_skills: List of missing skill names
+    :param job_title: Target job title string
+    :return: Friendly personalized learning roadmap string
+    """
+    if not missing_skills:
+        title_str = f" for {job_title}" if job_title else ""
+        return f"Excellent match! You already possess key required skills{title_str}."
+
+    top_missing = missing_skills[:3]
+    skills_str = ", ".join(top_missing)
+    title_str = f" for {job_title}" if job_title else ""
+    return f"To boost your match score{title_str}, focus on learning: {skills_str}."

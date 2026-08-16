@@ -10,7 +10,7 @@ torch.set_num_threads(1)
 
 from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
-from preprocessing import build_semantic_job_profile, clean_text, analyze_skill_gap
+from preprocessing import build_semantic_job_profile, clean_text, analyze_skill_gap, generate_career_roadmap
 
 
 class SemanticMatcher:
@@ -42,9 +42,12 @@ class SemanticMatcher:
         # 1. Load CSV using pandas
         self.df = pd.read_csv(job_csv_path).fillna('')
 
-        # 2. Load the pre-trained SBERT model 'all-MiniLM-L6-v2'
+        # 2. Load the pre-trained SBERT model 'all-MiniLM-L6-v2' (Fast local load)
         print("[+] Loading pre-trained SBERT model ('all-MiniLM-L6-v2')...")
-        self.model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
+        try:
+            self.model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu', local_files_only=True)
+        except Exception:
+            self.model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
 
         # 3. Check for cached embeddings on disk
         if os.path.exists(self.cache_file):
@@ -67,13 +70,14 @@ class SemanticMatcher:
         self.knn.fit(self.job_embeddings)
         print("[+] SemanticMatcher initialization complete!\n")
 
-    def match_candidate(self, candidate_text: str, top_k: int = 5) -> list:
+    def match_candidate(self, candidate_text: str, top_k: int = 5, min_score: float = 0.0) -> list:
         """
         Matches a candidate CV/profile string against all job descriptions in the dataset.
-        Also performs Skill Gap Analysis to extract matched and missing skills.
+        Also performs Skill Gap Analysis and personalized Career Learning Roadmap generation.
         
         :param candidate_text: Candidate CV summary, skills, or experience string
         :param top_k: Number of top job recommendations to return (default: 5)
+        :param min_score: Minimum match percentage threshold for filtering (default: 0.0)
         :return: List of dictionaries containing job details, match percentages, ratings, and skill gap insights
         """
         # Clean candidate text before encoding
@@ -94,6 +98,10 @@ class SemanticMatcher:
             # 3. Convert Cosine Distance to Similarity Percentage
             similarity_percentage = round(float((1 - dist) * 100), 2)
 
+            # Filter out jobs below minimum score threshold
+            if similarity_percentage < min_score:
+                continue
+
             # Categorize match quality
             if similarity_percentage >= 70.0:
                 match_category = "Strong Match"
@@ -105,21 +113,24 @@ class SemanticMatcher:
                 match_category = "Low Fit"
 
             job_row = self.df.iloc[idx]
+            job_title = str(job_row.get('Job Title', ''))
             job_skills_raw = str(job_row.get('Required Skills & Qualifications', ''))
 
             # Perform Skill Gap Analysis (Matched vs Missing Skills)
             skill_gap = analyze_skill_gap(cleaned_candidate_text, job_skills_raw)
+            roadmap = generate_career_roadmap(skill_gap['missing_skills'], job_title)
 
             # Build result dictionary with job details and skill gap analysis
             job_match_info = {
                 'job_id': idx,
-                'job_title': job_row.get('Job Title', ''),
+                'job_title': job_title,
                 'job_field': job_row.get('Job Field', ''),
                 'match_percentage': similarity_percentage,
                 'match_category': match_category,
                 'cosine_distance': round(float(dist), 4),
                 'matched_skills': skill_gap['matched_skills'],
                 'missing_skills': skill_gap['missing_skills'],
+                'learning_roadmap': roadmap,
                 'job_description': clean_text(str(job_row.get('Job Description', ''))),
                 'key_responsibilities': clean_text(str(job_row.get('Key Responsibilities', ''))),
                 'required_skills': clean_text(job_skills_raw)
