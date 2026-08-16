@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color: #f8fafc;
+  --text-color: #334155;
+  --text-heading: #0f172a;
+  --border-color: #e2e8f0;
+  --panel-bg: #ffffff;
+  --card-bg: #ffffff;
+  --card-hover-bg: #f8fafc;
+  --input-bg: #ffffff;
+  --input-text: #0f172a;
+  --input-focus-border: #6366f1;
+  --pill-bg: #f1f5f9;
+  --pill-text: #475569;
+  --footer-bg: #f8fafc;
+  --header-bg: #ffffff;
+  --sub-text: #64748b;
+  --border-job-card: #e2e8f0;
+  --inner-card-bg: #f8fafc;
+  --dark-indicator: #f1f5f9;
+  --meta-tag-bg: #f0f4ff;
+  --meta-tag-text: #4f46e5;
+  --meta-tag-border: #e0e7ff;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-text: #475569;
+  --btn-secondary-border: #cbd5e1;
+}
+
+[class~="dark"] {
+  --bg-color: #07080b;
+  --text-color: #cbd5e1;
+  --text-heading: #ffffff;
+  --border-color: rgba(255, 255, 255, 0.06);
+  --panel-bg: rgba(10, 12, 18, 0.65);
+  --card-bg: rgba(13, 16, 24, 0.4);
+  --card-hover-bg: rgba(18, 22, 33, 0.6);
+  --input-bg: rgba(8, 10, 15, 0.8);
+  --input-text: #f1f5f9;
+  --input-focus-border: rgba(99, 102, 241, 0.5);
+  --pill-bg: #0f172a;
+  --pill-text: #cbd5e1;
+  --footer-bg: #07080b;
+  --header-bg: rgba(7, 8, 11, 0.85);
+  --sub-text: #94a3b8;
+  --border-job-card: #111827;
+  --inner-card-bg: #090a0f;
+  --dark-indicator: #0f172a;
+  --meta-tag-bg: rgba(30, 27, 75, 0.3);
+  --meta-tag-text: #818cf8;
+  --meta-tag-border: rgba(99, 102, 241, 0.2);
+  --btn-secondary-bg: #111827;
+  --btn-secondary-text: #cbd5e1;
+  --btn-secondary-border: #1f2937;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', system-ui, sans-serif;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    color: var(--text-heading);
+  }
+}
+
+/* Minimalist Glass Card */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-card:hover {
+  background: var(--card-hover-bg);
+  border-color: rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+.glass-input {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--input-text);
+  transition: all 0.15s ease-in-out;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+/* Thin Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--btn-secondary-border);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sub-text);
+}
+
