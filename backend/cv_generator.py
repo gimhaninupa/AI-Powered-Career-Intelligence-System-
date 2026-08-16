@@ -1,20 +1,19 @@
 from typing import Optional
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-_generator_pipeline = None
+_tokenizer = None
+_model = None
 
 
-def get_generator_pipeline():
+def get_generator_model():
     """
-    Lazy loads and caches the Hugging Face text2text-generation pipeline with google/flan-t5-base.
+    Lazy loads and caches the Hugging Face tokenizer and model for google/flan-t5-base.
     """
-    global _generator_pipeline
-    if _generator_pipeline is None:
-        _generator_pipeline = pipeline(
-            "text2text-generation",
-            model="google/flan-t5-base"
-        )
-    return _generator_pipeline
+    global _tokenizer, _model
+    if _model is None:
+        _tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
+        _model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
+    return _tokenizer, _model
 
 
 def generate_cv_bullet(user_experience: str, job_requirement: str) -> str:
@@ -30,9 +29,11 @@ def generate_cv_bullet(user_experience: str, job_requirement: str) -> str:
 
     prompt = f"Rewrite the following candidate experience to align with the job requirement. Candidate Experience: {user_experience.strip()}. Job Requirement: {job_requirement.strip()}."
 
-    pipe = get_generator_pipeline()
-    response = pipe(
-        prompt,
+    tokenizer, model = get_generator_model()
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+    
+    outputs = model.generate(
+        inputs.input_ids,
         max_length=150,
         min_length=15,
         do_sample=False,
@@ -40,8 +41,8 @@ def generate_cv_bullet(user_experience: str, job_requirement: str) -> str:
         early_stopping=True
     )
 
-    if response and isinstance(response, list) and len(response) > 0:
-        generated_text = response[0].get("generated_text", "").strip()
+    if outputs is not None and len(outputs) > 0:
+        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
         return generated_text
 
     return "Successfully tailored experience to align with required job competencies."
