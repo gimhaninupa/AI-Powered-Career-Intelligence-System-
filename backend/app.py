@@ -1,7 +1,10 @@
 import os
 import sys
+import io
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from pypdf import PdfReader
+from docx import Document
 
 # Add backend directory to sys.path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -9,6 +12,29 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from preprocessing import ingest_csvs, clean_text, extract_skills, train_classifier
 from matching_engine import get_top_matches, calculate_similarity
 from cv_generator import generate_cv_bullet
+
+def extract_text_from_file(file_bytes, filename) -> str:
+    ext = os.path.splitext(filename.lower())[1]
+    if ext == ".txt":
+        return file_bytes.decode("utf-8", errors="ignore")
+    elif ext == ".pdf":
+        pdf_file = io.BytesIO(file_bytes)
+        reader = PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+        return text
+    elif ext in [".docx", ".doc"]:
+        docx_file = io.BytesIO(file_bytes)
+        doc = Document(docx_file)
+        text = ""
+        for para in doc.paragraphs:
+            text += para.text + "\n"
+        return text
+    else:
+        raise ValueError(f"Unsupported file format: {ext}")
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -40,6 +66,37 @@ def health_check():
         "job_count": len(job_df) if job_df is not None else 0,
         "resume_count": len(resume_df) if resume_df is not None else 0
     }), 200
+
+@app.route("/api/upload-cv", methods=["POST"])
+def upload_cv_endpoint():
+    """
+    POST /api/upload-cv
+    Payload: multipart/form-data with 'file'
+    Returns parsed text.
+    """
+    if "file" not in request.files:
+        return jsonify({"error": "No file part in the request."}), 400
+    
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No file selected."}), 400
+
+    try:
+        file_bytes = file.read()
+        extracted_text = extract_text_from_file(file_bytes, file.filename)
+        extracted_text = extracted_text.strip()
+        
+        if not extracted_text:
+            return jsonify({"error": "Failed to extract text or the file is empty."}), 400
+            
+        return jsonify({
+            "status": "success",
+            "filename": file.filename,
+            "extracted_text": extracted_text
+        }), 200
+    except Exception as e:
+        print(f"Error parsing file: {e}")
+        return jsonify({"error": f"An error occurred during file parsing: {str(e)}"}), 500
 
 
 @app.route("/api/match-jobs", methods=["POST"])

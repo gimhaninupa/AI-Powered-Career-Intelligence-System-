@@ -80,6 +80,24 @@ def clean_text(text: str) -> str:
     if not text or not isinstance(text, str):
         return ""
 
+    # Detect and correct PDF spaced-out letters (e.g., "S o f t w a r e  E n g i n e e r")
+    lines = text.splitlines()
+    cleaned_lines = []
+    for line in lines:
+        line_strip = line.strip()
+        if not line_strip:
+            continue
+        tokens = [t for t in line_strip.split(" ") if t]
+        if len(tokens) > 2:
+            single_char_count = sum(1 for t in tokens if len(t) == 1)
+            ratio = single_char_count / len(tokens)
+            if ratio > 0.60:
+                words = re.split(r'\s{2,}', line_strip)
+                cleaned_words = [w.replace(" ", "") for w in words if w]
+                line = " ".join(cleaned_words)
+        cleaned_lines.append(line)
+    text = "\n".join(cleaned_lines)
+
     # Replace HTML tags (like <br>, <br/>, <div>, <p>) with space
     text = re.sub(r"<[^>]+>", " ", text)
     
@@ -93,6 +111,7 @@ def clean_text(text: str) -> str:
     text = re.sub(r"\s+", " ", text)
 
     return text.strip()
+
 
 
 def extract_skills(text: str) -> List[str]:
