@@ -62,6 +62,7 @@ def main():
     print(f"Cosine Distance:      {top_match['cosine_distance']}")
     print(f"Matched Skills (✅):   {', '.join(top_match['matched_skills']) if top_match['matched_skills'] else 'None detected'}")
     print(f"Missing Skills (⚠️):   {', '.join(top_match['missing_skills']) if top_match['missing_skills'] else 'None (Complete skill overlap)'}")
+    print(f"Learning Roadmap (🚀): {top_match['learning_roadmap']}")
     print(f"Description:          {top_match['job_description'][:150]}...")
     print(f"Required Skills:      {top_match['required_skills']}")
     print("=" * 90)
